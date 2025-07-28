@@ -1,0 +1,14 @@
+{
+  "name": "yingchigamesdk-cocos-v2",
+  "version": "25.7.23",
+  "main": "dist/ycsdk/YCSDK.js",
+  "types": "dist/ycsdk/YCSDK.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "jackYan",
+  "files": [
+    "dist",
+    "assets/resources/Privacy"
+  ]
+}
