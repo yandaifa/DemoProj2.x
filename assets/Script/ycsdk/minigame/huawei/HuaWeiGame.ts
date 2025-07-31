@@ -50,77 +50,6 @@ export class HuaWeiGame implements GameInterface {
         })
     }
 
-    pay(params: string, callBack: Function): void {
-        // this.qg.isEnvReady({
-        //     isEnvReadyReq: {
-        //         // 替换为真实有效的APP ID
-        //         "applicationID": "101***751"
-        //     },
-        //     success: function (data) {
-        //         console.log("isEnvReady data =", JSON.stringify(data));
-        //         //环境监测通过，可以调用支付接口
-        //         this.createPurchaseIntent(params, callBack)
-        //     },
-        //     fail: function (data, code) {
-        //         console.log("isEnvReady fail data =" + data, "code =" + code);
-        //     }
-        // })
-    }
-
-    createPurchaseIntent(params, callBack): void {
-        // this.qg.createPurchaseIntent({
-        //     purchaseIntentReq: {
-        //         // 替换为真实有效的APP ID
-        //         "applicationID": "101***751",
-        //         "productId": "dmy001",
-        //         "priceType": 0,
-        //         "developerPayload": "testPurchase",
-        //         // 替换为真实有效的支付公钥
-        //         "publicKey": "MIIBojANBgkqh******************aZWT7PzVAeGidLcEeKlAgMBAAE"
-        //     },
-        //     success: function (data) {
-        //         console.log("createPurchaseIntent success =" + JSON.stringify(data));
-        //         if (data.purchaseState == 0) {
-        //             //支付成功，对结果验签后下发商品
-        //             this.doCheck()
-        //             //下发后消耗该商品，可继续购买该商品
-        //             this.consumeOwnedPurchase()
-        //         }
-        //     },
-        //     fail: function (data, code) {
-        //         console.log("createPurchaseIntent fail data =" + data, "code =" + code);
-
-        //     }
-        // })
-    }
-
-    doCheck(content: string, sign: string, publicKey: string): boolean {
-        // 检查输入参数
-        if (!sign || !publicKey) {
-            return false;
-        }
-    }
-
-    consumeOwnedPurchase() {
-        // this.qg.consumeOwnedPurchase({
-        //     consumeOwnedPurchaseReq: {
-        //         // 替换为真实有效的APP ID
-        //         "applicationID": "101***751",
-        //         "developerPayload": "testPurchase",
-        //         // 替换为真实有效的购买令牌
-        //         "purchaseToken": "0000017297d6a4faa**************3d0x434e.1.101315751",
-        //         // 替换为真实有效的支付公钥
-        //         "publicKey": "MIIBojANBgkqhkiG9w0*************************EeKlAgMBAAE"
-        //     },
-        //     success: function (data) {
-        //         console.log("consumeOwnedPurchase data =", JSON.stringify(data));
-        //     },
-        //     fail: function (data, code) {
-        //         console.log("consumeOwnedPurchase fail data =" + JSON.stringify(data), "code =" + code);
-        //     }
-        // })
-    }
-
     private bannerAd: any
 
     showBanner(position: BannerType): void {
@@ -137,11 +66,11 @@ export class HuaWeiGame implements GameInterface {
         var bannerTop = sysInfo.safeArea.height
         this.bannerAd = this.qg.createBannerAd({
             adUnitId: sdkconfig.ycBannerId,
-            adIntervals: 45,    //刷新时间
+            adIntervals: 40,    //刷新时间
             style: {
-                top: bannerTop - 60,
+                top: bannerTop - 20,
                 left: 0,
-                height: 60,
+                height: 57,
                 width: 360,
             }
         })
@@ -181,7 +110,7 @@ export class HuaWeiGame implements GameInterface {
 
     showInters(type: InterstitialType): void {
         if (!type) {
-            const odds = YCSDK.ins.random(100)
+            let odds = YCSDK.ins.random(100)
             if (odds >= 50 && sdkconfig.intersId.length >= 1) {
                 this.showIntersVideo()
             } else if (sdkconfig.nativeId.length >= 1) {
@@ -318,35 +247,33 @@ export class HuaWeiGame implements GameInterface {
 
     showNativeDownload(adItem, nativeAd, node) {
         const { screenWidth, screenHeight } = this.qg.getSystemInfoSync()
+        console.log(screenWidth)
+        console.log(screenHeight)
         nativeAd.showDownloadButton({
             adId: adItem.adId,
             style: {
-                left: node.width / 2,
-                top: node.height - 600,
-                // left: 300,
-                // top: 500,
+                left: screenWidth / 2 - screenWidth / 4,
+                top: screenHeight * 0.65,
                 heightType: 'normal',
                 width: screenWidth / 2,
-                fixedWidth: true
-                // minWidth: 400,
-                // maxWidth: 600,
-                // textSize: 50,
-                // horizontalPadding: 50,
-                // cornerRadius: 22,
-                // normalTextColor: '#FFFFFF',
-                // normalBackground: '#5291FF',
-                // pressedColor: '#0A59F7',
-                // normalStroke: 5,
-                // normalStrokeCorlor: '#FF000000',
-                // processingTextColor: '#5291FF',
-                // processingBackground: '#0F000000',
-                // processingColor: '#000000',
-                // processingStroke: 10,
-                // processingStrokeCorlor: '#0A59F7',
-                // installingTextColor: '#000000',
-                // installingBackground: '#FFFFFF',
-                // installingStroke: 15,
-                // installingStrokeCorlor: '#5291FF'
+                fixedWidth: true,
+                textSize: 50,
+                horizontalPadding: 50,
+                cornerRadius: 22,
+                normalTextColor: '#FFFFFF',
+                normalBackground: '#5291FF',
+                pressedColor: '#0A59F7',
+                normalStroke: 5,
+                normalStrokeCorlor: '#FF000000',
+                processingTextColor: '#5291FF',
+                processingBackground: '#0F000000',
+                processingColor: '#000000',
+                processingStroke: 10,
+                processingStrokeCorlor: '#0A59F7',
+                installingTextColor: '#000000',
+                installingBackground: '#FFFFFF',
+                installingStroke: 15,
+                installingStrokeCorlor: '#5291FF'
             },
             success: (code) => {
                 console.log("showDownloadButton: success")
@@ -432,7 +359,6 @@ export class HuaWeiGame implements GameInterface {
             YCSDK.ins.onError(AdType.Video, this.callback)
         })
         this.rewardedVideoAd.onClose((res) => {
-            console.log('ad onClose: ' + res.isEnded)
             YCSDK.ins.onClose(AdType.Video)
             if (res && res.isEnded || res === undefined) {
                 console.log('播放激励视频结束，给予奖励')
