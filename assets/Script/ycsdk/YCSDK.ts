@@ -9,6 +9,7 @@ import { MiniGame } from "./minigame/MiniGame"
 import { PayParams } from "./minigame/PayParams"
 import { PrivacyEvent } from "./minigame/PrivacyEvent"
 import { PrivacyListener } from "./minigame/PrivacyListener"
+import { AndroidGame } from "./nativegame/anroid/AndroidGame"
 import { Config, sdkconfig } from "./SDKConfig"
 import { StorageUtils } from "./StorageUtils"
 
@@ -35,15 +36,16 @@ export class YCSDK {
     private createPlatform(): void {
         let platform = cc.sys.platform
         console.log("current platform:", platform)
+        if (platform == cc.sys.ANDROID) {
+            this.platform = new AndroidGame()
+            return
+        }
         if (this.isSupportMiniGame(platform)) {
             this.platform = new MiniGame(platform)
             return
         }
         console.log("ycsdk暂不支持该小游戏平台,以调试模式运行")
         this.platform = new DebugGame()
-        const st = new AdTactics()
-        st.refreshAll()
-        this.setAdStateListener(st)
     }
 
     isSupportMiniGame(platform: number) {
@@ -71,48 +73,16 @@ export class YCSDK {
     }
 
     agreePrivacy(): boolean {
+        if (this.isRun(cc.sys.ANDROID)) {
+            return true
+        }
         return StorageUtils.getStringData(this.privacyKey) == 'agree'
     }
 
     showPolicy(node: cc.Node, callBack: PrivacyListener): void {
         console.log("ycsdk showPolicy")
         this.gameNode = node
-        let agree = StorageUtils.getStringData(this.privacyKey)
-        console.log(agree)
-        if (agree == 'agree') {
-            console.log("user agree privacy, not show")
-            callBack.userAgree && callBack.userAgree()
-            return
-        }
-
-        if (!node) {
-            console.log("node is null")
-            callBack.nodeError && callBack.nodeError()
-            return
-        }
-        cc.resources.load('Privacy/policyUI', cc.Prefab, (err, prefab: cc.Prefab) => {
-            if (err) {
-                console.error('加载Prefab失败:', err)
-                return
-            }
-            const yinsiUI = cc.instantiate(prefab)
-            const content = yinsiUI.getChildByName('panel').getChildByName('content')
-            if (!content.getComponent(PrivacyEvent)) {
-                content.addComponent(PrivacyEvent)
-            }
-            const agree = yinsiUI.getChildByName('panel').getChildByName('agree')
-            agree.on(cc.Node.EventType.TOUCH_END, () => {
-                callBack.onAgree && callBack.onAgree()
-                StorageUtils.setStringData(this.privacyKey, "agree")
-                yinsiUI.active = false
-            }, this)
-            const disagree = yinsiUI.getChildByName('panel').getChildByName('disagree')
-            disagree.on(cc.Node.EventType.TOUCH_END, () => {
-                callBack.onDisAgree && callBack.onDisAgree()
-                yinsiUI.active = false
-            }, this)
-            YCSDK.ins.getGameNode().addChild(yinsiUI)
-        })
+        this.platform.showPolicy(node, callBack)
     }
 
     login(callBack?: Function): void {
@@ -138,12 +108,8 @@ export class YCSDK {
         return Math.floor(Math.random() * max) + 1
     }
 
-    showInters(type: InterstitialType = InterstitialType.Initial): void {
+    showInters(type?: InterstitialType): void {
         console.log("ycsdk show interstitial, type:", type)
-        if (type) {
-            this.platform.showInters(type)
-            return
-        }
         this.platform.showInters(type)
     }
 

@@ -180,6 +180,15 @@ export class HuaWeiGame implements GameInterface {
     }
 
     showInters(type: InterstitialType): void {
+        if (!type) {
+            const odds = YCSDK.ins.random(100)
+            if (odds >= 50 && sdkconfig.intersId.length >= 1) {
+                this.showIntersVideo()
+            } else if (sdkconfig.nativeId.length >= 1) {
+                this.showNative()
+            }
+            return
+        }
         switch (type) {
             case InterstitialType.Initial:
             case InterstitialType.Video:
@@ -283,7 +292,7 @@ export class HuaWeiGame implements GameInterface {
                 nativeAd.hideDownloadButton({
                     adId: adItem.adId,
                     success: (code) => {
-                        console.log("hideDownloadButton: success");
+                        console.log("hideDownloadButton: success")
                     },
                     fail: (data, code) => {
                         console.log(" hideDownloadButton fail: " + data + "," + code)

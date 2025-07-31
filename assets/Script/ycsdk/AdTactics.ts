@@ -378,27 +378,5 @@ export class AdTactics implements AdState {
         return Math.floor(Math.random() * max)
     }
 
-    refreshBigPic() {
-        if (this.timerBigPic) {
-            clearTimeout(this.timerBigPic)
-        }
-        this.timerBigPic = setTimeout(() => {
-            YCSDK.ins.showBanner()
-        }, 20 * 1000)
-    }
-
-    private timerBannerId
-    refreshBanner() {
-        let time = 30 * 1000
-        console.log("start refresh banner")
-        if (this.timerBannerId > 0) {
-            console.log("clear time task: ", this.timerBannerId)
-            clearTimeout(this.timerBannerId)
-        }
-        this.timerBannerId = setTimeout(() => {
-            console.log("time end refresh banner")
-            YCSDK.ins.showBanner()
-        }, time)
-    }
 }
 

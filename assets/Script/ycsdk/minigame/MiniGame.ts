@@ -1,6 +1,7 @@
 import { AdTactics } from "../AdTactics";
 import { GameInterface } from "../GameInterface";
 import { sdkconfig } from "../SDKConfig";
+import { StorageUtils } from "../StorageUtils";
 import { YCSDK } from "../YCSDK";
 import { BannerType } from "./BannerType";
 import { DouYinGame } from "./douyin/DouYinGame";
@@ -10,12 +11,15 @@ import { InterstitialType } from "./InterstitialType";
 import { KuaiShouGame } from "./kuaishou/KuaiShouGame";
 import { Md5 } from "./md5";
 import { OppoGame } from "./oppo/OppoGame";
+import { PrivacyEvent } from "./PrivacyEvent";
+import { PrivacyListener } from "./PrivacyListener";
 import { VivoGame } from "./vivo/VivoGame";
 import { XiaoMiGame } from "./xiaomi/XiaoMiGame";
 
 export class MiniGame implements GameInterface {
 
     private channel: GameInterface
+    private privacyKey: string = "PRIVACY"
 
     constructor(platform: number) {
         this.channelFactory(platform)
@@ -82,6 +86,45 @@ export class MiniGame implements GameInterface {
         const st = new AdTactics()
         st.refreshAll()
         YCSDK.ins.setAdStateListener(st)
+    }
+
+    showPolicy(node: cc.Node, callBack: PrivacyListener) {
+        let agree = StorageUtils.getStringData(this.privacyKey)
+        console.log(agree)
+        if (agree == 'agree') {
+            console.log("user agree privacy, not show")
+            callBack.userAgree && callBack.userAgree()
+            return
+        }
+
+        if (!node) {
+            console.log("node is null")
+            callBack.nodeError && callBack.nodeError()
+            return
+        }
+        cc.resources.load('Privacy/policyUI', cc.Prefab, (err, prefab: cc.Prefab) => {
+            if (err) {
+                console.error('加载Prefab失败:', err)
+                return
+            }
+            const yinsiUI = cc.instantiate(prefab)
+            const content = yinsiUI.getChildByName('panel').getChildByName('content')
+            if (!content.getComponent(PrivacyEvent)) {
+                content.addComponent(PrivacyEvent)
+            }
+            const agree = yinsiUI.getChildByName('panel').getChildByName('agree')
+            agree.on(cc.Node.EventType.TOUCH_END, () => {
+                callBack.onAgree && callBack.onAgree()
+                StorageUtils.setStringData(this.privacyKey, "agree")
+                yinsiUI.active = false
+            }, this)
+            const disagree = yinsiUI.getChildByName('panel').getChildByName('disagree')
+            disagree.on(cc.Node.EventType.TOUCH_END, () => {
+                callBack.onDisAgree && callBack.onDisAgree()
+                yinsiUI.active = false
+            }, this)
+            YCSDK.ins.getGameNode().addChild(yinsiUI)
+        })
     }
 
     login(callBack?: Function): void {

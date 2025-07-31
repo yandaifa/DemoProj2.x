@@ -16,12 +16,13 @@ export interface GameInterface {
    */
   login(callBack?: Function): void
 
+  showPolicy?(node: cc.Node, callBack: PrivacyListener)
   /**
    * 支付
    * @param params 支付参数
    * @param callBack 支付回调
    */
-  pay(params: string, callBack: Function): void
+  pay?(params: string, callBack: Function): void
 
   /**
    * 展示banner广告

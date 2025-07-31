@@ -124,7 +124,11 @@ export class OppoGame implements GameInterface {
         }, 30 * 1000)
     }
 
-    showInters(type: InterstitialType): void {
+    showInters(type: InterstitialType = InterstitialType.Initial): void {
+        if (!type) {
+            this.showInitialType()
+            return
+        }
         switch (type) {
             case InterstitialType.Initial:
                 this.showInitialType()
