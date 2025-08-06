@@ -64,11 +64,13 @@ export class YCSDK {
             return
         }
         sdkconfig.pkgName = config.pkgName
+        sdkconfig.appId = config.appId
         sdkconfig.bannerId = config.bannerId
         sdkconfig.intersId = config.intersId
         sdkconfig.nativeId = config.nativeId
         sdkconfig.videoId = config.videoId
         sdkconfig.nativeBannerId = config.nativeBannerId
+        sdkconfig.extension = config.extension
         this.platform.init(callBack)
     }
 

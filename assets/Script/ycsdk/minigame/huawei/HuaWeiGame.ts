@@ -25,7 +25,7 @@ export class HuaWeiGame implements GameInterface {
     login(callBack?: Function): void {
         this.qg.gameLoginWithReal({
             forceLogin: 1,
-            appid: sdkconfig.version,
+            appid: sdkconfig.appId,
             success: function (data) {
                 // 登录成功后，可以存储账号信息。
                 callBack && callBack(true)

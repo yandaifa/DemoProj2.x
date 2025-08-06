@@ -46,31 +46,12 @@ export default class Demo extends cc.Component {
         let param: Config
         param = {
             pkgName: "",
+            appId:"",
             bannerId: [],
             intersId: [],
             videoId: [""],
             nativeId: [],
             nativeBannerId: []
-        }
-        if (YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
-            param = {
-                pkgName: "",
-                bannerId: [],
-                intersId: [],
-                videoId: [],
-                nativeId: [],
-                nativeBannerId: [],
-            }
-        }
-        if (YCSDK.ins.isRun(cc.sys.DESKTOP_BROWSER)) {
-            param = {
-                pkgName: "",
-                bannerId: [],
-                intersId: [],
-                videoId: ["111", "222", "333"],
-                nativeId: [],
-                nativeBannerId: []
-            }
         }
         YCSDK.ins.init(param, () => {
             console.log("demo init")

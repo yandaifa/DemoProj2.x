@@ -1,10 +1,12 @@
 export interface Config {
     pkgName: string
-    bannerId: string[]
-    intersId: string[]
-    videoId: string[]
-    nativeId: string[]
-    nativeBannerId: string[]
+    appId: string
+    bannerId?: string[]
+    intersId?: string[]
+    videoId?: string[]
+    nativeId?: string[]
+    nativeBannerId?: string[],
+    extension?:string[]
 }
 
 interface SDKConfig extends Config {
@@ -28,11 +30,13 @@ export let sdkconfig: SDKConfig = {
     subornUserTest: false,
     version: "1536",
     pkgName: "",
+    appId: "",
     bannerId: [],
     intersId: [],
     videoId: [],
     nativeId: [],
     nativeBannerId: [],
+    extension:[],
     ratio: {
         inters: 50,
         native: 50,
