@@ -8,6 +8,7 @@ export class AndroidGame implements GameInterface {
     className = 'com/ycsdk/cocos/GameBridge'
 
     init(callBack?: any): void {
+        callBack && callBack()
         this.login()
     }
 
