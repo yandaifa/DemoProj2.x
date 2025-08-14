@@ -128,6 +128,10 @@ export class YCSDK {
     }
 
     setAdStateListener(state: AdState) {
+        if (!state) {
+            console.log('state is null, can not add to list')
+            return
+        }
         if (this.states.includes(state)) {
             console.log("setAdStateListener interface is called")
             return
@@ -154,7 +158,7 @@ export class YCSDK {
             return
         }
         this.states.forEach(state => {
-            state.onLoad(type)
+            state.onLoad && state.onLoad(type)
         })
     }
 
@@ -163,7 +167,7 @@ export class YCSDK {
             return
         }
         this.states.forEach(state => {
-            state.onError(type, callback)
+            state.onError && state.onError(type, callback)
         })
     }
 
@@ -172,7 +176,7 @@ export class YCSDK {
             return
         }
         this.states.forEach(state => {
-            state.onShow(type)
+            state.onShow && state.onShow(type)
         })
     }
 
@@ -181,7 +185,7 @@ export class YCSDK {
             return
         }
         this.states.forEach(state => {
-            state.onClick(type)
+            state.onClick && state.onClick(type)
         })
     }
 
@@ -190,7 +194,7 @@ export class YCSDK {
             return
         }
         this.states.forEach(state => {
-            state.onClose(type)
+            state.onClose && state.onClose(type)
         })
     }
 
@@ -199,7 +203,7 @@ export class YCSDK {
             return
         }
         this.states.forEach(state => {
-            state.onReward()
+            state.onReward && state.onReward()
         })
     }
 }

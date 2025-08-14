@@ -23,12 +23,12 @@ export class OppoGame implements GameInterface {
             callback && callback()
             return
         }
-        const info = this.qg.getEnterOptionsSync()
+        let info = this.qg.getEnterOptionsSync()
         console.log("oppo init: ", info)
         if (info) {
-            const type = info.type
-            const query = info.query
-            const referrerInfo = info.referrerInfo
+            let type = info.type
+            let query = info.query
+            let referrerInfo = info.referrerInfo
             if (query && query.key1 && query.key2) {
                 sdkconfig.subornUser = true
                 this.config()
@@ -63,7 +63,7 @@ export class OppoGame implements GameInterface {
     }
 
     createBannerAd(position: BannerType) {
-        // const params = { adUnitId: sdkconfig.ycBannerId, style: position == BannerType.Top ? { top: 0, left: 0 } : {} }
+        // let params = { adUnitId: sdkconfig.ycBannerId, style: position == BannerType.Top ? { top: 0, left: 0 } : {} }
         if (this.bannerAd) {
             this.bannerAd.destroy()
             this.bannerAd = null
@@ -179,7 +179,7 @@ export class OppoGame implements GameInterface {
             console.log('原生模板广告参数没有配置')
             return
         }
-        const { windowHeight, windowWidth, platformVersionCode, screenWidth, screenHeight } = this.qg.getSystemInfoSync()
+        let { windowHeight, windowWidth, platformVersionCode, screenWidth, screenHeight } = this.qg.getSystemInfoSync()
         if (platformVersionCode < 1094) {
             console.log("快应用平台版本号低于1094,暂不支持原生模板广告相关API")
             return
@@ -258,7 +258,7 @@ export class OppoGame implements GameInterface {
             videoCallBack && videoCallBack(false)
             return
         }
-        const videoAd = this.qg.createRewardedVideoAd({
+        let videoAd = this.qg.createRewardedVideoAd({
             adUnitId: sdkconfig.ycVideoId
         })
         videoAd.onLoad(() => {
@@ -300,7 +300,7 @@ export class OppoGame implements GameInterface {
             console.log('视频广告参数没有配置')
             return
         }
-        const videoAd = this.qg.createRewardedVideoAd({
+        let videoAd = this.qg.createRewardedVideoAd({
             adUnitId: sdkconfig.ycVideoId
         })
         videoAd.onLoad(() => {
@@ -336,7 +336,7 @@ export class OppoGame implements GameInterface {
             console.log('视频广告参数没有配置')
             return
         }
-        const videoAd = this.qg.createRewardedVideoAd({
+        let videoAd = this.qg.createRewardedVideoAd({
             adUnitId: sdkconfig.ycVideoId
         })
         videoAd.onLoad(() => {
@@ -368,9 +368,9 @@ export class OppoGame implements GameInterface {
             console.log("快应用平台版本号低于1144，暂不支持原生2.0相关API")
             return
         }
-        const { windowHeight, windowWidth } = this.qg.getSystemInfoSync()
-        const bannerHeight = windowWidth / 5
-        const nativeAdvanceAd = this.qg.createNativeAdvanceAd({
+        let { windowHeight, windowWidth } = this.qg.getSystemInfoSync()
+        let bannerHeight = windowWidth / 5
+        let nativeAdvanceAd = this.qg.createNativeAdvanceAd({
             adUnitId: sdkconfig.ycNativeBannerId,
             style: {
                 top: windowHeight - bannerHeight,
