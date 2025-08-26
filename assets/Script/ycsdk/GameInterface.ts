@@ -1,3 +1,4 @@
+import { SubornVideoConfig } from "./minigame/SubornVideoConfig"
 import { BannerType } from "./minigame/BannerType"
 import { InterstitialType } from "./minigame/InterstitialType"
 import { PrivacyListener } from "./minigame/PrivacyListener"
@@ -7,8 +8,9 @@ export interface GameInterface {
   /**
    * 初始化，在游戏开始前调用
    * @param callBack sdk初始化完成回调
+   * @param adconfig 买量链接广告配置，可选
    */
-  init(callBack?): void
+  init(callBack?: Function, adconfig?: SubornVideoConfig): void
 
   /**
    * 登录

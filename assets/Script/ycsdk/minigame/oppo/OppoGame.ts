@@ -2,6 +2,7 @@ import { AdType } from "../../AdType"
 import { GameInterface } from "../../GameInterface"
 import { sdkconfig } from "../../SDKConfig"
 import { YCSDK } from "../../YCSDK"
+import { SubornVideoConfig } from "../SubornVideoConfig"
 import { BannerType } from "../BannerType"
 import { InterstitialType } from "../InterstitialType"
 
@@ -16,10 +17,10 @@ export class OppoGame implements GameInterface {
         console.log("current channel is oppo")
     }
 
-    init(callback?): void {
+    init(callback?: Function, adconfig?: SubornVideoConfig): void {
         if (sdkconfig.subornUserTest) {
             sdkconfig.subornUser = true
-            this.config()
+            this.config(adconfig)
             callback && callback()
             return
         }
@@ -31,14 +32,23 @@ export class OppoGame implements GameInterface {
             let referrerInfo = info.referrerInfo
             if (query && query.key1 && query.key2) {
                 sdkconfig.subornUser = true
-                this.config()
+                this.config(adconfig)
             }
         }
         callback && callback()
     }
 
-    config(): void {
-        this.loadVideoAdlast()
+    config(adconfig: SubornVideoConfig): void {
+        if (!adconfig.switch) {
+            return
+        }
+        if (adconfig.delay > 0) {
+            setTimeout(() => {
+                this.loadVideoAdlast(adconfig.count)
+            }, 1000 * adconfig.delay)
+            return
+        }
+        this.loadVideoAdlast(adconfig.count)
     }
 
     login(callBack?: Function): void {
@@ -295,43 +305,7 @@ export class OppoGame implements GameInterface {
         videoAd.load()
     }
 
-    loadVideoAdNoCallBack(later) {
-        if (!sdkconfig.ycVideoId) {
-            console.log('视频广告参数没有配置')
-            return
-        }
-        let videoAd = this.qg.createRewardedVideoAd({
-            adUnitId: sdkconfig.ycVideoId
-        })
-        videoAd.onLoad(() => {
-            console.log("oppo video load success")
-            YCSDK.ins.onLoad(AdType.Video)
-            videoAd.show()
-        })
-        videoAd.onError(err => {
-            console.log('onError:' + JSON.stringify(err))
-            YCSDK.ins.onError(AdType.Video)
-            if (!later) {
-                return
-            }
-            setTimeout(() => {
-                this.loadVideoAdlast()
-            }, 60 * 1000)
-            videoAd.destroy()
-        })
-        videoAd.onClose((res) => {
-            if (!later) {
-                return
-            }
-            setTimeout(() => {
-                this.loadVideoAdlast()
-            }, 60 * 1000)
-            videoAd.destroy()
-        })
-        videoAd.load()
-    }
-
-    loadVideoAdlast() {
+    loadVideoAdlast(videoCount: number) {
         if (!sdkconfig.ycVideoId) {
             console.log('视频广告参数没有配置')
             return
@@ -350,10 +324,10 @@ export class OppoGame implements GameInterface {
         })
         videoAd.onClose((res) => {
             this.count++
-            if (this.count >= 3) {
+            if (this.count >= videoCount) {
                 return
             }
-            this.loadVideoAdlast()
+            this.loadVideoAdlast(videoCount)
         })
         videoAd.load()
     }

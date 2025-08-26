@@ -3,6 +3,7 @@ import { GameInterface } from "../GameInterface";
 import { sdkconfig } from "../SDKConfig";
 import { StorageUtils } from "../StorageUtils";
 import { YCSDK } from "../YCSDK";
+import { SubornVideoConfig } from "./SubornVideoConfig";
 import { BannerType } from "./BannerType";
 import { DouYinGame } from "./douyin/DouYinGame";
 import HttpRequest from "./HttpRequest";
@@ -57,10 +58,12 @@ export class MiniGame implements GameInterface {
             .join('&')
     }
 
-    init(callBack?): void {
+    init(callBack?: Function, adconfig?: SubornVideoConfig): void {
+        if (!adconfig) adconfig = { switch: false, count: 0, delay: 0 }
         if (!YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
             this.setAdStateListener()
-            this.channel.init(callBack)
+            adconfig.switch = false
+            this.channel.init(callBack, adconfig)
             return
         }
         const url = "https://iaa.rhino-times.com/api/game/query-match-config"
@@ -70,15 +73,17 @@ export class MiniGame implements GameInterface {
         HttpRequest.get().requestPostjson(url, data, (success, result) => {
             if (!success || !result) {
                 this.setAdStateListener()
-                this.channel.init(callBack)
+                adconfig.switch = false
+                this.channel.init(callBack, adconfig)
                 return
             }
             const res = result.oexts
             sdkconfig.open = result.open
             sdkconfig.ratio = res.ratio
             sdkconfig.subornUserTest = res.subornUserTest
+            adconfig = res.subornVideoConfig
             this.setAdStateListener()
-            this.channel.init(callBack)
+            this.channel.init(callBack, adconfig)
         })
     }
 

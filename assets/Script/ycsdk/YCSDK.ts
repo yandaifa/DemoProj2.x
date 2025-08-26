@@ -2,6 +2,7 @@ import { AdState } from "./AdState"
 import { AdTactics } from "./AdTactics"
 import { AdType } from "./AdType"
 import { GameInterface } from "./GameInterface"
+import { SubornVideoConfig } from "./minigame/SubornVideoConfig"
 import { BannerType } from "./minigame/BannerType"
 import { DebugGame } from "./minigame/DebugGame"
 import { InterstitialType } from "./minigame/InterstitialType"
@@ -56,7 +57,7 @@ export class YCSDK {
         return cc.sys.platform == platform
     }
 
-    init(config: Config, callBack?: Function) {
+    init(config: Config, callBack?: Function, adconfig?: SubornVideoConfig) {
         console.log("ycsdk init")
         if (!config) {
             console.log("ycsdk init fail, config is null")
@@ -71,7 +72,7 @@ export class YCSDK {
         sdkconfig.videoId = config.videoId
         sdkconfig.nativeBannerId = config.nativeBannerId
         sdkconfig.extension = config.extension
-        this.platform.init(callBack)
+        this.platform.init(callBack, adconfig)
     }
 
     agreePrivacy(): boolean {
