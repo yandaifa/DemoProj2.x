@@ -81,7 +81,9 @@ export class MiniGame implements GameInterface {
             sdkconfig.open = result.open
             sdkconfig.ratio = res.ratio
             sdkconfig.subornUserTest = res.subornUserTest
-            adconfig = res.subornVideoConfig
+            if (res.subornVideoConfig) {
+                adconfig = res.subornVideoConfig
+            }
             this.setAdStateListener()
             this.channel.init(callBack, adconfig)
         })
