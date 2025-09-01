@@ -16,6 +16,7 @@ import { PrivacyEvent } from "./PrivacyEvent";
 import { PrivacyListener } from "./PrivacyListener";
 import { VivoGame } from "./vivo/VivoGame";
 import { XiaoMiGame } from "./xiaomi/XiaoMiGame";
+import { SubornNativeConfig } from "./SubornNativeConfig";
 
 export class MiniGame implements GameInterface {
 
@@ -58,12 +59,13 @@ export class MiniGame implements GameInterface {
             .join('&')
     }
 
-    init(callBack?: Function, adconfig?: SubornVideoConfig): void {
+    init(callBack?: Function, adconfig?: SubornVideoConfig, config?: SubornNativeConfig): void {
         if (!adconfig) adconfig = { switch: false, count: 0, delay: 0 }
+        if (!config) config = { switch: false, type: 0, loop: 0 }
         if (!YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
             this.setAdStateListener()
             adconfig.switch = false
-            this.channel.init(callBack, adconfig)
+            this.channel.init(callBack, adconfig, config)
             return
         }
         const url = "https://iaa.rhino-times.com/api/game/query-match-config"
@@ -74,7 +76,7 @@ export class MiniGame implements GameInterface {
             if (!success || !result) {
                 this.setAdStateListener()
                 adconfig.switch = false
-                this.channel.init(callBack, adconfig)
+                this.channel.init(callBack, adconfig, config)
                 return
             }
             const res = result.oexts
@@ -84,8 +86,11 @@ export class MiniGame implements GameInterface {
             if (res.subornVideoConfig) {
                 adconfig = res.subornVideoConfig
             }
+            if (res.subornNativeConfig) {
+                config = res.subornNativeConfig
+            }
             this.setAdStateListener()
-            this.channel.init(callBack, adconfig)
+            this.channel.init(callBack, adconfig, config)
         })
     }
 

@@ -53,7 +53,7 @@ export class DebugGame implements GameInterface {
             const disagree = yinsiUI.getChildByName('panel').getChildByName('disagree')
             disagree.on(cc.Node.EventType.TOUCH_END, () => {
                 callBack.onDisAgree && callBack.onDisAgree()
-                yinsiUI.active = false
+                yinsiUI.getChildByName('panel').getChildByName('tip').active = true
             }, this)
             YCSDK.ins.getGameNode().addChild(yinsiUI)
         })

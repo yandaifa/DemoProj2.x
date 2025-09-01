@@ -20,7 +20,7 @@ interface SDKConfig extends Config {
     ycIntersId: string
     ycBigPicId: string
     ycNativeBannerId: string
-    ratio: { inters: number, native: number, video: number }
+    ratio?: { inters: number, native: number, video: number }
     customFunc?: {}
 }
 
