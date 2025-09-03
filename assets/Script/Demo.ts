@@ -1,3 +1,5 @@
+import { BannerType } from "./ycsdk/minigame/BannerType";
+import { InterstitialType } from "./ycsdk/minigame/InterstitialType";
 import { Config, sdkconfig } from "./ycsdk/SDKConfig";
 import { YCSDK } from "./ycsdk/YCSDK";
 
@@ -43,17 +45,15 @@ export default class Demo extends cc.Component {
 
     initSDK() {
         console.log('start init')
-        let param: Config
-        param = {
-            pkgName: "",
-            appId:"",
-            bannerId: [],
-            intersId: [],
-            videoId: [""],
-            nativeId: [],
-            nativeBannerId: []
+        let params: Config = {
+            pkgName: "com.tlx.wddzz.nearme.gamecenter",
+            appId: "",
+            bannerId: ["2913720", "2913716", "2913711", "2913706", "2913702"],
+            videoId: ["2913725", "2913730", "2913745", "2913750", "2913755"],
+            nativeId: ["2913818", "2913813", "2913809", "2913804", "2913799"],
+            nativeBannerId: ["2913762", "2913763", "2913765", "2913770", "2913775"]
         }
-        YCSDK.ins.init(param, () => {
+        YCSDK.ins.init(params, () => {
             console.log("demo init")
         })
     }
@@ -64,17 +64,6 @@ export default class Demo extends cc.Component {
 
     showPolicy() {
         YCSDK.ins.showPolicy(this.node.parent, {
-            userAgree: () => {
-                console.log("userAgree")
-            },
-            nodeError: () => {
-                //传入的节点错误，隐私政策弹窗依赖游戏节点
-                console.log("nodeError")
-            },
-            onAgree: () => {
-                //同意隐私政策，继续游戏
-                console.log("onAgree")
-            },
             onDisAgree: () => {
                 //不同意隐私政策，退出游戏
                 console.log("onDisAgree")
@@ -83,7 +72,7 @@ export default class Demo extends cc.Component {
     }
 
     showBannerAd() {
-        YCSDK.ins.showBanner()
+        YCSDK.ins.showBanner(BannerType.Native)
     }
 
     hideBannerAd() {
@@ -91,7 +80,7 @@ export default class Demo extends cc.Component {
     }
 
     showIntersAd() {
-        YCSDK.ins.showInters()
+        YCSDK.ins.showInters(InterstitialType.Native)
     }
 
     hideIntersAd() {

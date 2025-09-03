@@ -108,7 +108,6 @@ export class OppoGame implements GameInterface {
                 this.bannerAd.destroy()
                 this.bannerAd = null
             }
-            this.refreshBanner()
         })
         this.bannerAd.onError(err => {
             console.log("banner错误监听: ", JSON.stringify(err))
@@ -134,18 +133,6 @@ export class OppoGame implements GameInterface {
         if (this.bannerAd) {
             this.bannerAd.hide()
         }
-    }
-
-    private timerBanner
-
-    private refreshBanner() {
-        if (this.timerBanner) {
-            clearTimeout(this.timerBanner)
-            this.timerBanner = 0
-        }
-        this.timerBanner = setTimeout(() => {
-            this.createBannerAd(BannerType.Normal)
-        }, 30 * 1000)
     }
 
     showInters(type: InterstitialType = InterstitialType.Initial): void {
@@ -203,7 +190,7 @@ export class OppoGame implements GameInterface {
             console.log('原生模板广告参数没有配置')
             return
         }
-        let { windowHeight, windowWidth, platformVersionCode, screenWidth, screenHeight } = this.qg.getSystemInfoSync()
+        let { windowHeight, windowWidth, platformVersionCode } = this.qg.getSystemInfoSync()
         if (platformVersionCode < 1094) {
             console.log("快应用平台版本号低于1094,暂不支持原生模板广告相关API")
             return
@@ -221,9 +208,10 @@ export class OppoGame implements GameInterface {
             }
         } else {
             style = {
-                top: 0,
-                left: screenWidth / 2 - screenHeight / 2,
-                width: screenWidth,
+                //广告尺寸按4：3计算
+                top: (windowHeight - (windowWidth * 0.6 * 0.75)) / 2,
+                left: (windowWidth - windowWidth * 0.6) / 2,
+                width: windowWidth * 0.6,
             }
         }
         this.nativeAd = this.qg.createCustomAd({
@@ -357,15 +345,28 @@ export class OppoGame implements GameInterface {
             return
         }
         let { windowHeight, windowWidth } = this.qg.getSystemInfoSync()
-        let bannerHeight = windowWidth / 5
-        let nativeAdvanceAd = this.qg.createNativeAdvanceAd({
-            adUnitId: sdkconfig.ycNativeBannerId,
-            style: {
+        let style = null
+        let bannerHeight = null
+        if (YCSDK.ins.vertical()) {
+            bannerHeight = windowWidth / 5
+            style = {
                 top: windowHeight - bannerHeight,
                 left: 0,
                 width: windowWidth,
                 height: bannerHeight
             }
+        } else {
+            bannerHeight = windowHeight / 5
+            style = {
+                top: windowHeight - bannerHeight,
+                left: (windowWidth - windowHeight) / 2,
+                width: windowHeight,
+                height: bannerHeight
+            }
+        }
+        let nativeAdvanceAd = this.qg.createNativeAdvanceAd({
+            adUnitId: sdkconfig.ycNativeBannerId,
+            style: style
         })
         nativeAdvanceAd.load().then(() => {
             console.log("promise 回调：加载成功")
@@ -518,8 +519,6 @@ export class OppoGame implements GameInterface {
             console.log(`原生广告2.0关闭回调, code: ${res.code}, msg: ${res.msg}`)
             YCSDK.ins.onClose(AdType.NativeBanner)
             nativeAdvanceAd.destroy()
-            this.refreshBanner()
-
         })
     }
 
