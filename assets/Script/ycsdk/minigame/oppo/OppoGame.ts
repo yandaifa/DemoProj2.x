@@ -336,7 +336,14 @@ export class OppoGame implements GameInterface {
 
     customFunc(methodName: string, params: any[], callBack: Function) {
         console.log("oppo custom function name:", methodName)
-
+        if (methodName == 'vibrate') {
+            this.qg.vibrateShort({
+                type: "medium",
+                success: function (res) { },
+                fail: function (res) { },
+                complete: function (res) { },
+            })
+        }
     }
 
     showNativeBanner() {

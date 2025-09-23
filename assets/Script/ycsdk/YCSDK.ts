@@ -10,10 +10,11 @@ import { MiniGame } from "./minigame/MiniGame"
 import { PayParams } from "./minigame/PayParams"
 import { PrivacyEvent } from "./minigame/PrivacyEvent"
 import { PrivacyListener } from "./minigame/PrivacyListener"
-import { AndroidGame } from "./nativegame/anroid/AndroidGame"
+import { AndroidGame } from "./nativegame/android/AndroidGame"
 import { Config, sdkconfig } from "./SDKConfig"
 import { StorageUtils } from "./StorageUtils"
 import { SubornNativeConfig } from "./minigame/SubornNativeConfig"
+import { HarmonyGame } from "./nativegame/harmony/HarmonyGame"
 
 export class YCSDK {
 
@@ -40,6 +41,10 @@ export class YCSDK {
         console.log("current platform:", platform)
         if (platform == cc.sys.ANDROID) {
             this.platform = new AndroidGame()
+            return
+        }
+        if(platform == 12){
+            this.platform = new HarmonyGame()
             return
         }
         if (this.isSupportMiniGame(platform)) {
@@ -77,7 +82,7 @@ export class YCSDK {
     }
 
     agreePrivacy(): boolean {
-        if (this.isRun(cc.sys.ANDROID)) {
+        if (this.isRun(cc.sys.ANDROID) || this.isRun(12)) {
             return true
         }
         return StorageUtils.getStringData(this.privacyKey) == 'agree'

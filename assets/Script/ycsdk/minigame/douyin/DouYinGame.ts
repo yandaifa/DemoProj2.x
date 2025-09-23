@@ -154,6 +154,16 @@ export class DouYinGame implements GameInterface {
     }
 
     customFunc(methodName: string, params: any[], callBack: Function) {
+        if (methodName == 'vibrate') {
+            window['tt'].vibrateShort({
+                success(res) {
+                    console.log(`${res}`);
+                },
+                fail(res) {
+                    console.log(`vibrateShort调用失败`);
+                },
+            });
+        }
     }
 
 }
