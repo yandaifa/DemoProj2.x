@@ -20,7 +20,7 @@ export class DebugGame implements GameInterface {
         callBack && callBack()
     }
 
-    showPolicy(node: cc.Node, callBack: PrivacyListener) {
+    showPolicy(node: cc.Node, callBack: PrivacyListener,company?:string) {
         let agree = StorageUtils.getStringData(this.privacyKey)
         console.log(agree)
         if (agree == 'agree') {
@@ -59,6 +59,30 @@ export class DebugGame implements GameInterface {
         })
     }
 
+    showPrivacyInfo(node: cc.Node, onClose?: Function) {
+        if(!node){
+            console.log("showPrivacyInfo node is null")
+            return
+        }
+        let path = 'Privacy/privacyUI_' + sdkconfig.company
+        console.log(path)
+        cc.resources.load(path, cc.Prefab, (err, prefab: cc.Prefab) => {
+            if (err) {
+                console.error('加载Prefab失败:', err)
+                return
+            }
+            let yinsiUI = cc.instantiate(prefab)
+            const close = yinsiUI.getChildByName('window').getChildByName('closeBtn')
+            close.on(cc.Node.EventType.TOUCH_END, () => {
+                yinsiUI.active = false
+                onClose && onClose()
+            }, this)
+            node.addChild(yinsiUI)
+            yinsiUI.active = true
+        })
+    }
+
+    
     login(callBack?: Function): void {
         console.log("debug call login")
     }

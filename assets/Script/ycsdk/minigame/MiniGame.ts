@@ -17,6 +17,7 @@ import { PrivacyListener } from "./PrivacyListener";
 import { VivoGame } from "./vivo/VivoGame";
 import { XiaoMiGame } from "./xiaomi/XiaoMiGame";
 import { SubornNativeConfig } from "./SubornNativeConfig";
+import { WeChatGame } from "./wechat/WeChatGame";
 
 export class MiniGame implements GameInterface {
 
@@ -45,8 +46,11 @@ export class MiniGame implements GameInterface {
             case cc.sys.BYTEDANCE_GAME:
                 this.channel = new DouYinGame()
                 break
+            // case cc.sys.WECHAT_GAME:
+            //     this.channel = new KuaiShouGame()
+            //     break
             case cc.sys.WECHAT_GAME:
-                this.channel = new KuaiShouGame()
+                this.channel = new WeChatGame()
                 break
             default:
                 break
@@ -136,6 +140,29 @@ export class MiniGame implements GameInterface {
                 yinsiUI.getChildByName('panel').getChildByName('tip').active = true
             }, this)
             YCSDK.ins.getGameNode().addChild(yinsiUI)
+        })
+    }
+
+    showPrivacyInfo(node: cc.Node, onClose?: Function) {
+        if(!node){
+            console.log("showPrivacyInfo node is null")
+            return
+        }
+        let path = 'Privacy/privacyUI_' + sdkconfig.company
+        console.log(path)
+        cc.resources.load(path, cc.Prefab, (err, prefab: cc.Prefab) => {
+            if (err) {
+                console.error('加载Prefab失败:', err)
+                return
+            }
+            let yinsiUI = cc.instantiate(prefab)
+            const close = yinsiUI.getChildByName('window').getChildByName('closeBtn')
+            close.on(cc.Node.EventType.TOUCH_END, () => {
+                yinsiUI.active = false
+                onClose && onClose()
+            }, this)
+            node.addChild(yinsiUI)
+            yinsiUI.active = true
         })
     }
 

@@ -48,6 +48,7 @@ export default class Demo extends cc.Component {
         let params: Config = {
             pkgName: "com.tlx.wddzz.nearme.gamecenter",
             appId: "",
+            company: "yc",
             bannerId: ["2913720", "2913716", "2913711", "2913706", "2913702"],
             videoId: ["2913725", "2913730", "2913745", "2913750", "2913755"],
             nativeId: ["2913818", "2913813", "2913809", "2913804", "2913799"],
@@ -68,6 +69,9 @@ export default class Demo extends cc.Component {
                 //不同意隐私政策，退出游戏
                 console.log("onDisAgree")
             }
+        })
+        YCSDK.ins.showPrivacyInfo(this.node.parent,()=>{
+            console.log("PrivacyInfo on close")
         })
     }
 

@@ -15,6 +15,7 @@ import { Config, sdkconfig } from "./SDKConfig"
 import { StorageUtils } from "./StorageUtils"
 import { SubornNativeConfig } from "./minigame/SubornNativeConfig"
 import { HarmonyGame } from "./nativegame/harmony/HarmonyGame"
+import { IOSGame } from "./nativegame/ios/IOSGame"
 
 export class YCSDK {
 
@@ -43,8 +44,12 @@ export class YCSDK {
             this.platform = new AndroidGame()
             return
         }
-        if(platform == 12){
+        if (platform == 12) {
             this.platform = new HarmonyGame()
+            return
+        }
+        if (platform == cc.sys.IPHONE) {
+            this.platform = new IOSGame()
             return
         }
         if (this.isSupportMiniGame(platform)) {
@@ -70,6 +75,7 @@ export class YCSDK {
             callBack && callBack()
             return
         }
+        if (config.company) sdkconfig.company = config.company
         sdkconfig.pkgName = config.pkgName
         sdkconfig.appId = config.appId
         sdkconfig.bannerId = config.bannerId
@@ -85,6 +91,9 @@ export class YCSDK {
         if (this.isRun(cc.sys.ANDROID) || this.isRun(12)) {
             return true
         }
+        if (this.isRun(cc.sys.BYTEDANCE_GAME) || this.isRun(cc.sys.WECHAT_GAME)) {
+            return true
+        }
         return StorageUtils.getStringData(this.privacyKey) == 'agree'
     }
 
@@ -92,6 +101,11 @@ export class YCSDK {
         console.log("ycsdk showPolicy")
         this.gameNode = node
         this.platform.showPolicy(node, callBack)
+    }
+
+    showPrivacyInfo?(node: cc.Node, onClose?: Function): void {
+        console.log("ycsdk showPrivacyInfo")
+        this.platform.showPrivacyInfo(node, onClose)
     }
 
     login(callBack?: Function): void {

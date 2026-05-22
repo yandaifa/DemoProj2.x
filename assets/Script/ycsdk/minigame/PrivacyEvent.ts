@@ -1,3 +1,4 @@
+import { sdkconfig } from "../SDKConfig"
 import { YCSDK } from "../YCSDK"
 
 export class PrivacyEvent extends cc.Component {
@@ -5,10 +6,9 @@ export class PrivacyEvent extends cc.Component {
     private yinsiUI: cc.Node
 
     onLoad(): void {
-        if (YCSDK.ins.isRun(cc.sys.ANDROID)) {
-            return
-        }
-        cc.resources.load('Privacy/yinsiUI', cc.Prefab, (err, prefab: cc.Prefab) => {
+        let path = 'Privacy/privacyUI_' + sdkconfig.company
+        console.log(path)
+        cc.resources.load(path, cc.Prefab, (err, prefab: cc.Prefab) => {
             if (err) {
                 console.error('加载Prefab失败:', err)
                 return

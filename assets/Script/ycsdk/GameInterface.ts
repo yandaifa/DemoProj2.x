@@ -17,9 +17,21 @@ export interface GameInterface {
    * 登录
    * @param callBack 登录结果回调
    */
-  login(callBack?: Function): void
+  login?(callBack?: Function): void
 
+  /**
+   * 展示隐私弹窗
+   * @param node 隐私弹窗的父节点
+   * @param callBack 隐私弹窗的回调
+   */
   showPolicy?(node: cc.Node, callBack: PrivacyListener)
+
+  /**
+   * 展示隐私政策的详细信息弹窗
+   * @param node 隐私信息弹窗的父节点
+   * @param onClose 关闭回调
+   */
+  showPrivacyInfo?(node: cc.Node, onClose?: Function)
   /**
    * 支付
    * @param params 支付参数
@@ -63,5 +75,5 @@ export interface GameInterface {
    * @param params 入参
    * @param callBack 回调
    */
-  customFunc(methodName: string, params: any[], callBack: Function): any
+  customFunc?(methodName: string, params: any[], callBack: Function): any
 }

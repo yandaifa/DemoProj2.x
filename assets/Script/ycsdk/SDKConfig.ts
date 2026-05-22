@@ -1,6 +1,7 @@
 export interface Config {
     pkgName: string
     appId: string
+    company?:string
     bannerId?: string[]
     intersId?: string[]
     videoId?: string[]
@@ -29,6 +30,7 @@ export let sdkconfig: SDKConfig = {
     subornUser: false,
     subornUserTest: false,
     version: "1536",
+    company: 'tl',
     pkgName: "",
     appId: "",
     bannerId: [],
