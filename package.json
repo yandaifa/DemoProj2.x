@@ -1,6 +1,6 @@
 {
   "name": "yingchigamesdk-cocos-v2",
-  "version": "26.5.22",
+  "version": "26.5.25",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
