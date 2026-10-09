@@ -1,9 +1,19 @@
 import { AdState } from "./AdState"
 import { AdType } from "./AdType"
 import { BannerType } from "./minigame/BannerType"
+import HttpRequest from "./minigame/HttpRequest"
 import { InterstitialType } from "./minigame/InterstitialType"
-import { sdkconfig } from "./SDKConfig"
+import { UtilsEncrypt } from "./minigame/UtilsEncrypt"
+import { gameconfig, sdkconfig } from "./SDKConfig"
+import { StorageUtils } from "./StorageUtils"
 import { YCSDK } from "./YCSDK"
+
+const AdStateLoadSuc: number = 3000
+const AdStateLoadFail: number = 3001
+const AdStateShowSuc: number = 3002
+const AdStateShowFail: number = 3003
+const AdStateClick: number = 3004
+const AdStateClose: number = 3005
 
 export class AdTactics implements AdState {
 
@@ -21,6 +31,9 @@ export class AdTactics implements AdState {
 
     onLoad(type: AdType): void {
         console.log("on load: ", type)
+        if (YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
+            this.report(AdStateLoadSuc, type)
+        }
         this.refreshId(type)//加载广告成功后换id
         switch (type) {
             case AdType.Banner:
@@ -44,24 +57,100 @@ export class AdTactics implements AdState {
     onError(type: AdType, callBack?: Function): void {
         console.log("on error: ", type)
         if (YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
+            this.report(AdStateLoadFail, type)
             this.reLoadAd(type, callBack)
         }
     }
 
     onShow(type: AdType): void {
         console.log("on show: ", type)
+        if (YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
+            this.report(AdStateShowSuc, type)
+        }
     }
 
     onClick(type: AdType): void {
         console.log("on click: ", type)
+        if (YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
+            this.report(AdStateClick, type)
+        }
     }
 
-    onClose(type: AdType, callBack?: Function): void {
+    onClose(type: AdType): void {
         console.log("on close: ", type)
+        if (YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
+            this.report(AdStateClose, type)
+        }
     }
-
     onReward(): void {
         console.log("on reward")
+    }
+
+    report(code: number, type: AdType) {
+        if (gameconfig.asId <= 0) {
+            console.log("as id is 0,can not rerepot")
+            return
+        }
+        let url = 'https://api.yingchihub.com/gsdk/3/report'
+        // let url = 'http://192.168.2.103:8080/gsdk/3/report'
+        let uuid = StorageUtils.getStringData("randomUUID")
+        if (!uuid) {
+            uuid = "31" + cc.sys.now()
+            StorageUtils.setStringData("randomUUID", uuid)
+        }
+        let body = {
+            "asId": gameconfig.asId,
+            "channel": gameconfig.channel,
+            "sdkVer": gameconfig.sdkVer,
+            "pkgName": sdkconfig.pkgName,
+            "pkgVer": gameconfig.pkgVer,
+            "uuid": uuid,
+            "taskId": "" + cc.sys.now(),
+            "adId": this.getAdId(type),
+            "adType": this.getType(type),
+            "eventId": code,
+            "ts": cc.sys.now(),
+            "msg": "展示成功"
+        }
+        // console.log("start body:", body)
+        let head = UtilsEncrypt.buildSec(gameconfig.appId, gameconfig.appKey)
+        HttpRequest.get().requestPostjson2(url, UtilsEncrypt.encrypt(body, head), (success) => {
+            if (success) {
+                console.log("report success")
+            }
+        }, { appId: gameconfig.appId, appKey: gameconfig.appKey })
+    }
+
+    getAdId(type: AdType): string {
+        switch (type) {
+            case AdType.Banner:
+                return sdkconfig.ycBannerId;
+            case AdType.Inters:
+                return sdkconfig.ycIntersId;
+            case AdType.Native:
+                return sdkconfig.ycNativeId;
+            case AdType.Video:
+                return sdkconfig.ycVideoId;
+            case AdType.NativeBanner:
+                return sdkconfig.ycNativeBannerId;
+            default:
+                return "1";
+        }
+    }
+
+    getType(type: AdType): number {
+        switch (type) {
+            case AdType.Banner:
+                return 4;
+            case AdType.Native:
+                return 2;
+            case AdType.Inters:
+                return 5;
+            case AdType.Video:
+                return 6;
+            default:
+                return 0;
+        }
     }
 
     reLoadAd(type: AdType, callback): void {

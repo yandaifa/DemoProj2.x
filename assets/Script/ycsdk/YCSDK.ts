@@ -61,11 +61,15 @@ export class YCSDK {
     }
 
     isSupportMiniGame(platform: number) {
-        return this.suportPlatfrom.includes(platform)
+        return this.suportPlatfrom.includes(platform) || this.isHonorMiniGame(platform)
     }
 
     isRun(platform: number): boolean {
         return cc.sys.platform == platform
+    }
+
+    isHonorMiniGame(platform: number): boolean {
+        return platform == 123
     }
 
     init(config: Config, callBack?: Function, adconfig?: SubornVideoConfig, cf?: SubornNativeConfig) {

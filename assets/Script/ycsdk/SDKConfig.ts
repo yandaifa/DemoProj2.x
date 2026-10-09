@@ -22,6 +22,8 @@ interface SDKConfig extends Config {
     ycBigPicId: string
     ycNativeBannerId: string
     ratio?: { inters: number, native: number, video: number }
+    subornVideoConfig?: { switch?: boolean, count?: number, delay?: number }
+    subornNativeConfig?: { switch?: boolean, type?: number, loop?: number }
     customFunc?: {}
 }
 
@@ -52,4 +54,22 @@ export let sdkconfig: SDKConfig = {
     ycBigPicId: "",
     ycNativeBannerId: "",
     customFunc: {}
+}
+
+export interface GameConfig {
+    channel: number
+    appId: number
+    appKey: string
+    pkgVer: string
+    sdkVer: string
+    asId: number
+}
+
+export let gameconfig: GameConfig = {
+    channel: 31,
+    appId: 281,
+    appKey: 'O134sJSO1tkjj3NI',
+    pkgVer: '1.5.36',
+    sdkVer: '1.5.36',
+    asId: 0
 }

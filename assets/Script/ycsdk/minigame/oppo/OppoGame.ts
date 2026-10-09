@@ -99,7 +99,7 @@ export class OppoGame implements GameInterface {
         this.bannerAd.onLoad(() => {
             console.log('[Banner广告] 广告加载成功')
             YCSDK.ins.onLoad(AdType.Banner)
-            YCSDK.ins.onShow(AdType.Banner)
+            // YCSDK.ins.onShow(AdType.Banner)
         })
         this.bannerAd.onHide(() => {
             console.log("banner广告隐藏")
@@ -171,6 +171,7 @@ export class OppoGame implements GameInterface {
             console.log('插屏广告加载成功')
             YCSDK.ins.onLoad(AdType.Inters)
             interstitialAd.show()
+            YCSDK.ins.onShow(AdType.Inters)
         })
         interstitialAd.onClose(function () {
             console.log('插屏广告关闭')

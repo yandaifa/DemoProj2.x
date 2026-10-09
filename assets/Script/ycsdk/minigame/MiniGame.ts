@@ -1,6 +1,6 @@
 import { AdTactics } from "../AdTactics";
 import { GameInterface } from "../GameInterface";
-import { sdkconfig } from "../SDKConfig";
+import { gameconfig, sdkconfig } from "../SDKConfig";
 import { StorageUtils } from "../StorageUtils";
 import { YCSDK } from "../YCSDK";
 import { SubornVideoConfig } from "./SubornVideoConfig";
@@ -18,11 +18,14 @@ import { VivoGame } from "./vivo/VivoGame";
 import { XiaoMiGame } from "./xiaomi/XiaoMiGame";
 import { SubornNativeConfig } from "./SubornNativeConfig";
 import { WeChatGame } from "./wechat/WeChatGame";
+import { HonorGame } from "./honor/HonorGame";
+import { UtilsEncrypt } from "./UtilsEncrypt";
 
 export class MiniGame implements GameInterface {
 
     private channel: GameInterface
     private privacyKey: string = "PRIVACY"
+    private intersOpen: boolean
 
     constructor(platform: number) {
         this.channelFactory(platform)
@@ -52,7 +55,8 @@ export class MiniGame implements GameInterface {
             case cc.sys.WECHAT_GAME:
                 this.channel = new WeChatGame()
                 break
-            default:
+            case 123:
+                this.channel = new HonorGame()
                 break
         }
     }
@@ -66,7 +70,7 @@ export class MiniGame implements GameInterface {
     init(callBack?: Function, adconfig?: SubornVideoConfig, config?: SubornNativeConfig): void {
         if (!adconfig) adconfig = { switch: false, count: 0, delay: 0 }
         if (!config) config = { switch: false, type: 0, loop: 0 }
-        if (!YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
+        if (!YCSDK.ins.isRun(cc.sys.OPPO_GAME) && !YCSDK.ins.isHonorMiniGame(cc.sys.platform)) {
             this.setAdStateListener()
             adconfig.switch = false
             this.channel.init(callBack, adconfig, config)
@@ -87,14 +91,76 @@ export class MiniGame implements GameInterface {
             sdkconfig.open = result.open
             sdkconfig.ratio = res.ratio
             sdkconfig.subornUserTest = res.subornUserTest
+            this.intersOpen = res.intersOpen
             if (res.subornVideoConfig) {
                 adconfig = res.subornVideoConfig
+                sdkconfig.subornVideoConfig = adconfig
             }
             if (res.subornNativeConfig) {
                 config = res.subornNativeConfig
+                sdkconfig.subornNativeConfig = config
             }
             this.setAdStateListener()
             this.channel.init(callBack, adconfig, config)
+        })
+        if (!YCSDK.ins.isRun(cc.sys.OPPO_GAME)) {
+            console.log("can not conf, because is not oppo")
+            return
+        }
+        window['qg'].getDeviceId({
+            success: function (data) {
+                console.log(`handling success: ${data.deviceId}`);
+                let link = 'https://api.yingchihub.com/gsdk/3/conf'
+                // let link = 'http://192.168.2.103:8080/gsdk/3/conf'
+                let uuid = StorageUtils.getStringData("randomUUID")
+                if (!uuid) {
+                    uuid = "31" + cc.sys.now()
+                    StorageUtils.setStringData("randomUUID", uuid)
+                }
+                console.log("build params")
+                let body = {
+                    "channel": gameconfig.channel,
+                    "sdkVer": gameconfig.sdkVer,
+                    "pkgName": sdkconfig.pkgName,
+                    "pkgVer": gameconfig.pkgVer,
+                    "androidId": "",
+                    "oaid": data.deviceId,
+                    "oaid5": Md5.hashStr(data.deviceId),
+                    "imei": "",
+                    "imei5": "",
+                    "uuid": uuid,
+                    "root": false,
+                    "developer": false,
+                    "vpn": false,
+                    "emulator": false,
+                    "model": "",
+                    "brand": "",
+                    "os": "",
+                    "ov": "",
+                    "net": ""
+                }
+                // let body = { "msg": "hello world" }
+                let head = UtilsEncrypt.buildSec(gameconfig.appId, gameconfig.appKey)
+                // console.log("start send request:", body)
+                // console.log("start send request:", head)
+                let reqbody = UtilsEncrypt.encrypt(JSON.stringify(body), head)
+                HttpRequest.get().requestPostjson2(link, reqbody, (success, result) => {
+                    if (!success) {
+                        console.log("conf fail:", result)
+                        return
+                    }
+                    if (!result) {
+                        console.log("conf fail: empty result")
+                        return
+                    }
+                    let res = UtilsEncrypt.decrypt(result, head)
+                    // console.log("conf suc:", res)
+                    gameconfig.asId = JSON.parse(res).asId
+                }, { appId: gameconfig.appId, appKey: gameconfig.appKey })
+            },
+            fail: function (data, code) {
+                console.log(`handling fail, code = ${code}`);
+            },
         })
     }
 
@@ -144,7 +210,7 @@ export class MiniGame implements GameInterface {
     }
 
     showPrivacyInfo(node: cc.Node, onClose?: Function) {
-        if(!node){
+        if (!node) {
             console.log("showPrivacyInfo node is null")
             return
         }
@@ -179,6 +245,10 @@ export class MiniGame implements GameInterface {
             console.log("广告未开启")
             return
         }
+        if(!this.intersOpen){
+            console.log("插屏广告未开启")
+            return
+        }
         this.channel.showBanner(position)
     }
 
@@ -189,6 +259,10 @@ export class MiniGame implements GameInterface {
     showInters(type: InterstitialType): void {
         if (!sdkconfig.open) {
             console.log("广告未开启")
+            return
+        }
+        if(!this.intersOpen){
+            console.log("插屏广告未开启")
             return
         }
         console.log("interstitial type:", type)
